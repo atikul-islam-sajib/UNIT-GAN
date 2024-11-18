@@ -4,6 +4,7 @@ import math
 import argparse
 import torch
 import torch.nn as nn
+from torchview import draw_graph
 
 sys.path.append("./src/")
 
@@ -44,14 +45,12 @@ class Encoder(nn.Module):
 
         for _ in range(2):
             self.downLayers.append(
-                nn.ReflectionPad2d(padding=self.in_channels // self.in_channels)
-            )
-            self.downLayers.append(
                 nn.Conv2d(
                     in_channels=self.out_channels,
                     out_channels=self.out_channels * 2,
                     kernel_size=self.kerenl_size // 2,
                     stride=(self.in_channels // self.in_channels) + 1,
+                    padding=self.in_channels // self.in_channels,
                 )
             )
             self.downLayers.append(
@@ -115,3 +114,9 @@ if __name__ == "__main__":
     assert (
         mu1.size() == mu2.size() == z1.size() == z2.size()
     ), "Shape mismatch(mu1, mu2) and (z1, z2)".capitalize()
+
+    for filename in ["encoder1", "encoder2"]:
+        draw_graph(
+            model=encoder1,
+            input_data=torch.randn(batch_size, in_channels, image_size, image_size),
+        ).visual_graph.render(filename=f"./artifacts/files/{filename}", format="pdf")
