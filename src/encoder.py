@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 import argparse
 import torch
 import torch.nn as nn
@@ -16,7 +17,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
 
         self.in_channels = in_channels
-        self.out_channels = (self.in_channels * 21) + 1
+        self.out_channels = int(math.pow(2, self.in_channels + self.in_channels))
         self.kerenl_size = (self.in_channels * 2) + 1
 
         if not isinstance(sharedBlocks, ResidualBlock):
@@ -90,9 +91,18 @@ class Encoder(nn.Module):
 
 
 if __name__ == "__main__":
-    encoder1 = Encoder(in_channels=3, sharedBlocks=ResidualBlock(in_channels=256))
-    print(encoder1)
-    mu, z = encoder1(torch.randn(1, 3, 128, 128))
+    in_channels = 3
+    shared_E = ResidualBlock(
+        in_channels=int(in_channels * (math.pow(2, 8) - 1) / in_channels + 1)
+    )
 
-    print("mu:", mu.size())
-    print("z:", z.size())
+    encoder1 = Encoder(in_channels=3, sharedBlocks=shared_E)
+    mu1, z1 = encoder1(torch.randn(1, 3, 128, 128))
+
+    encoder2 = Encoder(in_channels=3, sharedBlocks=shared_E)
+    mu2, z2 = encoder2(torch.randn(1, 3, 128, 128))
+
+    print(f"mu1 shape: {mu1.shape}")
+    print(f"z1 shape: {z1.shape}")
+    print(f"mu2 shape: {mu2.shape}")
+    print(f"z2 shape: {z2.shape}")
