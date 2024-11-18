@@ -5,7 +5,6 @@ import argparse
 import torch
 import torch.nn as nn
 
-
 sys.path.append("./src/")
 
 from residualBlock import ResidualBlock
@@ -91,18 +90,28 @@ class Encoder(nn.Module):
 
 
 if __name__ == "__main__":
-    in_channels = 3
+    parser = argparse.ArgumentParser(description="Encoder for UNIT-GAN".title())
+    parser.add_argument(
+        "--in_channels", type=int, default=3, help="Number of input channels"
+    )
+
+    args = parser.parse_args()
+
+    in_channels = args.in_channels
+
+    batch_size = 1
+    image_size = 128
+
     shared_E = ResidualBlock(
         in_channels=int(in_channels * (math.pow(2, 8) - 1) / in_channels + 1)
     )
 
-    encoder1 = Encoder(in_channels=3, sharedBlocks=shared_E)
-    mu1, z1 = encoder1(torch.randn(1, 3, 128, 128))
+    encoder1 = Encoder(in_channels=in_channels, sharedBlocks=shared_E)
+    encoder2 = Encoder(in_channels=in_channels, sharedBlocks=shared_E)
 
-    encoder2 = Encoder(in_channels=3, sharedBlocks=shared_E)
-    mu2, z2 = encoder2(torch.randn(1, 3, 128, 128))
+    mu1, z1 = encoder1(torch.randn(batch_size, in_channels, image_size, image_size))
+    mu2, z2 = encoder2(torch.randn(batch_size, in_channels, image_size, image_size))
 
-    print(f"mu1 shape: {mu1.shape}")
-    print(f"z1 shape: {z1.shape}")
-    print(f"mu2 shape: {mu2.shape}")
-    print(f"z2 shape: {z2.shape}")
+    assert (
+        mu1.size() == mu2.size() == z1.size() == z2.size()
+    ), "Shape mismatch(mu1, mu2) and (z1, z2)".capitalize()
