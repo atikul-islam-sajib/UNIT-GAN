@@ -1,7 +1,9 @@
 import os
 import sys
 import torch
+import argparse
 import torch.nn as nn
+from torchview import draw_graph
 
 sys.path.append("./src/")
 
@@ -46,5 +48,32 @@ class ResidualBlock(nn.Module):
 
 
 if __name__ == "__main__":
-    residual = ResidualBlock(in_channels=256)
-    print(residual(torch.randn(1, 256, 32, 32)).size())
+    parser = argparse.ArgumentParser(description="Residual Block for UNIT-GAN".title())
+    parser.add_argument(
+        "--channels", type=int, default=256, help="Define the channels".capitalize()
+    )
+
+    args = parser.parse_args()
+
+    image_channels = args.channels
+
+    residual = nn.Sequential(
+        *[ResidualBlock(in_channels=image_channels) for _ in range(3)]
+    )
+
+    batch_size = 1
+    image_size = 32
+
+    assert residual(torch.randn(1, 256, 32, 32)).size() == (
+        batch_size,
+        image_channels,
+        image_size,
+        image_size,
+    ), "Residual block is not working correctly".capitalize()
+
+    draw_graph(
+        model=residual,
+        input_data=torch.randn(batch_size, image_channels, image_size, image_size),
+    ).visual_graph.render(filename="./artifacts/files/residualBlocks", format="pdf")
+
+    print("Residual Block is stored in the folder {}".format("./artifacts/files/"))
