@@ -4,6 +4,7 @@ import math
 import torch
 import argparse
 import torch.nn as nn
+from torchview import draw_graph
 
 sys.path.append("./src/")
 
@@ -62,5 +63,36 @@ class Discriminator(nn.Module):
 
 
 if __name__ == "__main__":
-    netD = Discriminator(in_channels=3)
-    print(netD(torch.randn(1, 3, 128, 128)).size())
+    parser = argparse.ArgumentParser(
+        description="Discriminator for the UNIT-GAN".title()
+    )
+    parser.add_argument(
+        "--in_channels",
+        type=int,
+        default=3,
+        help="Define the number of channels".capitalize(),
+    )
+    args = parser.parse_args()
+
+    image_channels = args.in_channels
+
+    batch_size = 1
+    image_size = 128
+
+    netD = Discriminator(in_channels=image_channels)
+
+    assert netD(
+        torch.randn(batch_size, image_channels, image_size, image_size)
+    ).size() == torch.Size(
+        [
+            batch_size,
+            image_channels // image_channels,
+            image_size // 16,
+            image_size // 16,
+        ]
+    )
+
+    draw_graph(
+        model=netD,
+        input_data=torch.randn(batch_size, image_channels, image_size, image_size),
+    ).visual_graph.render(filename="./artifacts/files/netD", format="pdf")
