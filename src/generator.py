@@ -80,5 +80,39 @@ class Generator(nn.Module):
 
 
 if __name__ == "__main__":
-    netG = Generator(in_channels=256, sharedBlock=ResidualBlock(in_channels=256))
-    print(netG(torch.randn(1, 256, 32, 32)).size())
+    parser = argparse.ArgumentParser(description="Generator for the UNIT-GAN".title())
+    parser.add_argument(
+        "--in_channels",
+        type=int,
+        default=256,
+        help="Number of input channels".capitalize(),
+    )
+
+    args = parser.parse_args()
+
+    image_channels = args.in_channels
+
+    batch_size = 1
+    image_size = 32
+
+    shared_G = ResidualBlock(in_channels=image_channels)
+
+    netG1 = Generator(
+        in_channels=image_channels,
+        sharedBlock=ResidualBlock(in_channels=image_channels),
+    )
+    netG2 = Generator(
+        in_channels=image_channels,
+        sharedBlock=ResidualBlock(in_channels=image_channels),
+    )
+
+    generatedImage1 = netG1(
+        torch.randn(batch_size, image_channels, image_size, image_size)
+    )
+    generatedImage2 = netG2(
+        torch.randn(batch_size, image_channels, image_size, image_size)
+    )
+
+    assert (
+        generatedImage1.size() == generatedImage2.size()
+    ), "Shape mismatch(generatedImage1, generatedImage2)".capitalize()
