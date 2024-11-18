@@ -4,6 +4,7 @@ import math
 import torch
 import argparse
 import torch.nn as nn
+from torchview import draw_graph
 
 sys.path.append("./src/")
 
@@ -116,3 +117,9 @@ if __name__ == "__main__":
     assert (
         generatedImage1.size() == generatedImage2.size()
     ), "Shape mismatch(generatedImage1, generatedImage2)".capitalize()
+
+    for filename in ["netG1", "netG2"]:
+        draw_graph(
+            model=netG1,
+            input_data=torch.randn(batch_size, image_channels, image_size, image_size),
+        ).visual_graph.render(filename=f"./artifacts/files/{filename}", format="pdf")
