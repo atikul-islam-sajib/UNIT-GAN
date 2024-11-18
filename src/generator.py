@@ -12,7 +12,7 @@ from residualBlock import ResidualBlock
 
 
 class Generator(nn.Module):
-    def __init__(self, in_channels: int = 256, sharedBlock: ResidualBlock = None):
+    def __init__(self, in_channels: int = 256, sharedBlocks: ResidualBlock = None):
         super(Generator, self).__init__()
 
         self.in_channels = in_channels
@@ -22,8 +22,8 @@ class Generator(nn.Module):
         self.stride_size = int(math.sqrt(self.kernel_size))
         self.padding_size = self.stride_size // self.stride_size
 
-        if isinstance(sharedBlock, ResidualBlock):
-            self.sharedBlock = sharedBlock
+        if isinstance(sharedBlocks, ResidualBlock):
+            self.sharedBlock = sharedBlocks
         else:
             raise ValueError(
                 "shared_block must be an instance of ResidualBlock".capitalize()
@@ -100,11 +100,11 @@ if __name__ == "__main__":
 
     netG1 = Generator(
         in_channels=image_channels,
-        sharedBlock=ResidualBlock(in_channels=image_channels),
+        sharedBlocks=ResidualBlock(in_channels=image_channels),
     )
     netG2 = Generator(
         in_channels=image_channels,
-        sharedBlock=ResidualBlock(in_channels=image_channels),
+        sharedBlocks=ResidualBlock(in_channels=image_channels),
     )
 
     generatedImage1 = netG1(
