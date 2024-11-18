@@ -46,6 +46,13 @@ class ResidualBlock(nn.Module):
         else:
             raise ValueError("Input should be the tensor type".capitalize())
 
+    @staticmethod
+    def total_parameters(model):
+        if model is not None:
+            return sum(params.numel() for params in model.parameters())
+        else:
+            raise ValueError("Model must be specified".capitalize())
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Residual Block for UNIT-GAN".title())
@@ -77,3 +84,8 @@ if __name__ == "__main__":
     ).visual_graph.render(filename="./artifacts/files/residualBlocks", format="pdf")
 
     print("Residual Block is stored in the folder {}".format("./artifacts/files/"))
+    print(
+        "Total number of parameters in the model: {}".format(
+            ResidualBlock.total_parameters(residual)
+        )
+    )
