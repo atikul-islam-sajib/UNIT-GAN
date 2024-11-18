@@ -8,6 +8,7 @@ sys.path.append("./src/")
 
 from encoder import Encoder
 from generator import Generator
+from discriminator import Discriminator
 from residualBlock import ResidualBlock
 
 
@@ -21,6 +22,8 @@ class UnitTest(unittest.TestCase):
         self.shared_G = ResidualBlock(in_channels=256)
         self.netG1 = Generator(in_channels=256, sharedBlocks=self.shared_G)
         self.netG2 = Generator(in_channels=256, sharedBlocks=self.shared_G)
+
+        self.netD = Discriminator(in_channels=3)
 
     def test_residualBlocks(self):
         self.assertEqual(
@@ -74,6 +77,32 @@ class UnitTest(unittest.TestCase):
                 os.path.exists(f"./artifacts/files/{filename}.pdf"),
                 f"Graph for {filename} is not generated".capitalize(),
             )
+
+    def test_discriminator(self):
+        batch_size = 1
+        image_channels = 3
+        image_size = 128
+
+        output1 = self.netD(
+            torch.randn(batch_size, image_channels, image_size, image_size)
+        )
+
+        for filename in ["netD"]:
+            self.assertTrue(
+                os.path.exists(f"./artifacts/files/{filename}.pdf"),
+                f"Graph for {filename} is not generated".capitalize(),
+            )
+
+        self.assertEqual(
+            output1.size(),
+            (
+                batch_size,
+                image_channels // image_channels,
+                image_size // 16,
+                image_size // 16,
+            ),
+            "Discriminator output is not as expected".capitalize(),
+        )
 
 
 if __name__ == "__main__":
