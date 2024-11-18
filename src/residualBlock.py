@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     print("Residual Block is stored in the folder {}".format("./artifacts/files/"))
     print(
-        "Total number of parameters in the model: {}".format(
+        "Total number of parameters in the model: {}".capitalize().format(
             ResidualBlock.total_parameters(residual)
         )
     )
