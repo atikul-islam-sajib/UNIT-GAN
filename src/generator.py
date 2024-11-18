@@ -98,14 +98,8 @@ if __name__ == "__main__":
 
     shared_G = ResidualBlock(in_channels=image_channels)
 
-    netG1 = Generator(
-        in_channels=image_channels,
-        sharedBlocks=ResidualBlock(in_channels=image_channels),
-    )
-    netG2 = Generator(
-        in_channels=image_channels,
-        sharedBlocks=ResidualBlock(in_channels=image_channels),
-    )
+    netG1 = Generator(in_channels=image_channels, sharedBlocks=shared_G)
+    netG2 = Generator(in_channels=image_channels, sharedBlocks=shared_G)
 
     generatedImage1 = netG1(
         torch.randn(batch_size, image_channels, image_size, image_size)
