@@ -7,12 +7,16 @@ import torch.optim as optim
 
 sys.path.append("./src/")
 
-from residualBlock import ResidualBlock
 from encoder import Encoder
-from generator import Generator
-from discriminator import Discriminator
 from gan_loss import GANLoss
+from generator import Generator
 from pixel_loss import PixelLoss
+from discriminator import Discriminator
+from residualBlock import ResidualBlock
+
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
 def helper(**kwargs):
@@ -73,3 +77,58 @@ def helper(**kwargs):
         "criterion": criterion,
         "pixelLoss": pixelLoss,
     }
+
+
+if __name__ == "__main__":
+    init = helper(
+        lr=2e-4,
+        beta1=0.5,
+        beta2=0.999,
+        momentum=0.95,
+        adam=True,
+        SGD=False,
+    )
+
+    encoder1 = init["E1"]
+    encoder2 = init["E2"]
+
+    netG1 = init["netG1"]
+    netG2 = init["netG2"]
+
+    optimizerG = init["optimizerG"]
+    optimizerD1 = init["optimizerD1"]
+    optimizerD2 = init["optimizerD2"]
+
+    criterion = init["criterion"]
+    pixelLoss = init["pixelLoss"]
+
+    assert (
+        encoder1.__class__ == Encoder
+    ), "Encoder object should be Encoder class".capitalize()
+    assert (
+        encoder2.__class__ == Encoder
+    ), "Encoder object should be Encoder class".capitalize()
+
+    assert (
+        netG1.__class__ == Generator
+    ), "Generator object should be Generator class".capitalize()
+    assert (
+        netG1.__class__ == Generator
+    ), "Generator object should be Generator class".capitalize()
+
+    assert (
+        optimizerG.__class__ == optim.Adam
+    ), "optimizerG object should be Adam class".capitalize()
+    assert (
+        optimizerD1.__class__ == optim.Adam
+    ), "optimizerD1 object should be Adam class".capitalize()
+    assert (
+        optimizerD2.__class__ == optim.Adam
+    ), "optimizerD2 object should be Adam class".capitalize()
+
+    assert (
+        criterion.__class__ == GANLoss
+    ), "Criterion object should be GANLoss class".capitalize()
+    assert (
+        pixelLoss.__class__ == PixelLoss
+    ), "pixelLoss object should be PixelLoss class".capitalize()
