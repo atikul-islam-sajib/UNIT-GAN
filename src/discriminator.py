@@ -8,6 +8,7 @@ from torchview import draw_graph
 
 sys.path.append("./src/")
 
+from utils import config
 
 class Discriminator(nn.Module):
     def __init__(self, in_channels: int = 3):
@@ -76,8 +77,8 @@ if __name__ == "__main__":
 
     image_channels = args.in_channels
 
-    batch_size = 1
-    image_size = 128
+    batch_size = config()["dataloader"]["batch_size"]
+    image_size = config()["dataloader"]["image_size"]
 
     netD = Discriminator(in_channels=image_channels)
 
