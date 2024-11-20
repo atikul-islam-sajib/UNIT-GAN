@@ -1,0 +1,38 @@
+path:
+  raw_path: "./data/raw/"
+  processed_path: "./data/processed/"
+  files_path: "./artifacts/files/"
+  train_models: "./artifacts/checkpoints/train_models/"
+  best_model: "./artifacts/checkpoints/test_model/"
+  metrics_path": "./artifacts/metrics/"
+  train_images: "./artifacts/outputs/train_images/"
+  test_image: "./artifacts/outputs/test_image/"
+
+dataloader:
+  image_channels: 3
+  batch_size: 1
+  image_size: 128
+  split_size: 0.20
+
+trainer:
+  epochs: 1000
+  lr: 2e-4
+  beta1: 0.5
+  beta2: 0.999
+  momentum: 0.95
+  weight_decay: 1e-3
+  step_size: 20
+  gamma: 0.85
+  device: "cuda"
+  adam: True
+  SGD: False
+  l1_regularizer: False
+  l2_regularizer: False
+  elasticNetRegularizer: False
+  MLFlow: False
+  verbose: True
+
+tester:
+  model: "best"
+  dataset: "test"
+  device: "cuda"
