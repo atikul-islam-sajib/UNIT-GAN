@@ -26,6 +26,9 @@ class Loader:
         self.batch_size = batch_size
         self.split_size = split_size
 
+        self.imageA = []
+        self.imageB = []
+
     def unzip_folder(self):
         os.makedirs(config()["path"]["processed_path"], exist_ok=True)
 
@@ -67,7 +70,22 @@ class Loader:
             )
 
     def features_extractor(self):
-        pass
+        dataset_path = os.path.join(config()["path"]["processed_path"], "dataset")
+
+        images_path = os.path.join(dataset_path, "image")
+        masks_path = os.path.join(dataset_path, "mask")
+
+        for image in os.listdir(images_path):
+            if image.endswith((".jpg", ".jpeg", "png")) and (
+                image in os.path.join(masks_path, image)
+            ):
+                image_path = os.path.join(images_path, image)
+                mask_path = os.path.join(masks_path, image)
+
+                self.imageA.append(image_path)
+                self.imageB.append(mask_path)
+
+        assert len(self.imageA) == len(self.imageB)
 
     def create_dataloader(self):
         pass
@@ -79,4 +97,5 @@ class Loader:
 
 if __name__ == "__main__":
     loader = Loader(dataset="./data/raw/dataset.zip")
-    loader.unzip_folder()
+    # loader.unzip_folder()
+    loader.features_extractor()
