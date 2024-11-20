@@ -3,7 +3,9 @@ import zipfile
 import sys
 import torch
 import argparse
+from PIL import Image
 import torch.nn as nn
+from torchvision import transforms
 
 sys.path.append("./src/")
 
@@ -27,8 +29,22 @@ class Loader():
     def split_dataset(self):
         pass
     
-    def transforms(self):
-        pass
+    def transforms(self, type: str = "image"):
+        if type == "image":
+            return transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Resize((self.image_size, self.image_siz), Image.BICUBIC),
+                transforms.CenterCrop((self.image_size, self.image_size)),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            ])
+        else:
+            return transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Resize((self.image_size, self.image_size)),
+                transforms.CenterCrop((self.image_size, self.image_size)),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            ])
+        
     
     def features_extractor(self):
         pass
