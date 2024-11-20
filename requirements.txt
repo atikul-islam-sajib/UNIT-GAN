@@ -1,0 +1,13 @@
+# Python 3.10
+dvc
+dagshub
+graphviz
+matplotlib
+numpy
+mlflow
+PyYAML
+torch
+torchaudio
+torchvision
+torchsummary
+torchview
