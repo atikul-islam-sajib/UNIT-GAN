@@ -71,6 +71,8 @@ def helper(**kwargs):
         "E2": E2,
         "netG1": G1,
         "netG2": G2,
+        "netD1": D1,
+        "netD2": D2,
         "optimizerG": optimizerG,
         "optimizerD1": optimizerD1,
         "optimizerD2": optimizerD2,
@@ -94,6 +96,9 @@ if __name__ == "__main__":
 
     netG1 = init["netG1"]
     netG2 = init["netG2"]
+    
+    netD1 = init["netD1"]
+    netD2 = init["netD2"]
 
     optimizerG = init["optimizerG"]
     optimizerD1 = init["optimizerD1"]
@@ -115,6 +120,13 @@ if __name__ == "__main__":
     assert (
         netG1.__class__ == Generator
     ), "Generator object should be Generator class".capitalize()
+    
+    assert (
+        netD1.__class__ == Discriminator
+    ), "netD1 object should be Discriminator class".capitalize()
+    assert (
+        netD2.__class__ == Discriminator
+    ), "netD2 object should be Discriminator class".capitalize()
 
     assert (
         optimizerG.__class__ == optim.Adam
