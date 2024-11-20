@@ -76,7 +76,7 @@ class Loader:
         masks_path = os.path.join(dataset_path, "mask")
 
         for image in os.listdir(images_path):
-            if image.endswith((".jpg", ".jpeg", "png")) and (
+            if image.endswith((".jpg", ".jpeg", ".png")) and (
                 image in os.path.join(masks_path, image)
             ):
                 image_path = os.path.join(images_path, image)
