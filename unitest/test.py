@@ -3,11 +3,15 @@ import sys
 import torch
 import unittest
 import torch.nn as nn
+import torch.optim as optim
 
 sys.path.append("./src/")
 
+from helper import helper
 from encoder import Encoder
+from gan_loss import GANLoss
 from generator import Generator
+from pixel_loss import PixelLoss
 from discriminator import Discriminator
 from residualBlock import ResidualBlock
 
@@ -24,6 +28,15 @@ class UnitTest(unittest.TestCase):
         self.netG2 = Generator(in_channels=256, sharedBlocks=self.shared_G)
 
         self.netD = Discriminator(in_channels=3)
+
+        self.init = helper(
+            lr=2e-4,
+            beta1=0.5,
+            beta2=0.999,
+            momentum=0.95,
+            adam=True,
+            SGD=False,
+        )
 
     def test_residualBlocks(self):
         self.assertEqual(
@@ -103,6 +116,61 @@ class UnitTest(unittest.TestCase):
             ),
             "Discriminator output is not as expected".capitalize(),
         )
+
+    def test_helper_method(self):
+        encoder1 = self.init["E1"]
+        encoder2 = self.init["E2"]
+
+        netG1 = self.init["netG1"]
+        netG2 = self.init["netG2"]
+
+        netD1 = self.init["netD1"]
+        netD2 = self.init["netD2"]
+
+        optimizerG = self.init["optimizerG"]
+        optimizerD1 = self.init["optimizerD1"]
+        optimizerD2 = self.init["optimizerD2"]
+
+        criterion = self.init["criterion"]
+        pixelLoss = self.init["pixelLoss"]
+
+        assert (
+            encoder1.__class__ == Encoder
+        ), "Encoder object should be Encoder class".capitalize()
+        assert (
+            encoder2.__class__ == Encoder
+        ), "Encoder object should be Encoder class".capitalize()
+
+        assert (
+            netG1.__class__ == Generator
+        ), "Generator object should be Generator class".capitalize()
+        assert (
+            netG2.__class__ == Generator
+        ), "Generator object should be Generator class".capitalize()
+
+        assert (
+            netD1.__class__ == Discriminator
+        ), "netD1 object should be Discriminator class".capitalize()
+        assert (
+            netD2.__class__ == Discriminator
+        ), "netD2 object should be Discriminator class".capitalize()
+
+        assert (
+            optimizerG.__class__ == optim.Adam
+        ), "optimizerG object should be Adam class".capitalize()
+        assert (
+            optimizerD1.__class__ == optim.Adam
+        ), "optimizerD1 object should be Adam class".capitalize()
+        assert (
+            optimizerD2.__class__ == optim.Adam
+        ), "optimizerD2 object should be Adam class".capitalize()
+
+        assert (
+            criterion.__class__ == GANLoss
+        ), "Criterion object should be GANLoss class".capitalize()
+        assert (
+            pixelLoss.__class__ == PixelLoss
+        ), "pixelLoss object should be PixelLoss class".capitalize()
 
 
 if __name__ == "__main__":
