@@ -8,6 +8,7 @@ from torchview import draw_graph
 
 sys.path.append("./src/")
 
+from utils import config
 from residualBlock import ResidualBlock
 
 
@@ -91,15 +92,15 @@ class Encoder(nn.Module):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Encoder for UNIT-GAN".title())
     parser.add_argument(
-        "--in_channels", type=int, default=3, help="Number of input channels"
+        "--in_channels", type=int, default=config()["dataloader"]["image_channels"], help="Number of input channels"
     )
 
     args = parser.parse_args()
 
     in_channels = args.in_channels
 
-    batch_size = 1
-    image_size = 128
+    batch_size = config()["dataloader"]["batch_size"]
+    image_size = config()["dataloader"]["image_size"]
 
     shared_E = ResidualBlock(
         in_channels=int(in_channels * (math.pow(2, 8) - 1) / in_channels + 1)
