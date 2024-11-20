@@ -7,6 +7,7 @@ import torch.optim as optim
 
 sys.path.append("./src/")
 
+from utils import config
 from encoder import Encoder
 from gan_loss import GANLoss
 from generator import Generator
@@ -30,14 +31,14 @@ def helper(**kwargs):
     shared_E = ResidualBlock(in_channels=256)
     shared_G = ResidualBlock(in_channels=256)
 
-    E1 = Encoder(in_channels=3, sharedBlocks=shared_E)
-    E2 = Encoder(in_channels=3, sharedBlocks=shared_E)
+    E1 = Encoder(in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E)
+    E2 = Encoder(in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E)
 
     G1 = Generator(in_channels=256, sharedBlocks=shared_G)
     G2 = Generator(in_channels=256, sharedBlocks=shared_G)
 
-    D1 = Discriminator(in_channels=3)
-    D2 = Discriminator(in_channels=3)
+    D1 = Discriminator(in_channels=config()["dataloader"]["image_channels"])
+    D2 = Discriminator(in_channels=config()["dataloader"]["image_channels"])
 
     if adam:
         optimizerG = optim.Adam(
