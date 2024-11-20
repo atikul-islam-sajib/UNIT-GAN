@@ -38,6 +38,9 @@ class UnitTest(unittest.TestCase):
             SGD=False,
         )
 
+        self.pixelLoss = PixelLoss(reduction="mean")
+        self.criterion = GANLoss(reduction="mean")
+
     def test_residualBlocks(self):
         self.assertEqual(
             self.residualBlock(x=torch.randn(1, 256, 32, 32)).size(),
@@ -171,6 +174,22 @@ class UnitTest(unittest.TestCase):
         assert (
             pixelLoss.__class__ == PixelLoss
         ), "pixelLoss object should be PixelLoss class".capitalize()
+
+    def test_pixelLoss(self):
+        actual = torch.tensor([1.0, 0.0, 1.0, 1.0])
+        predicted = torch.tensor([1.0, 0.0, 1.0, 1.0])
+
+        assert (
+            type(self.pixelLoss(predicted, actual)) == torch.Tensor
+        ), "Result should be in the tensor format".capitalize()
+
+    def test_GANLoss(self):
+        actual = torch.tensor([1.0, 0.0, 1.0, 1.0])
+        predicted = torch.tensor([1.0, 0.0, 1.0, 1.0])
+
+        assert (
+            type(self.criterion(predicted, actual)) == torch.Tensor
+        ), "Result should be in the tensor format".capitalize()
 
 
 if __name__ == "__main__":
