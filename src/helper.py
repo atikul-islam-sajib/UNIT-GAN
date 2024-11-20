@@ -118,7 +118,7 @@ if __name__ == "__main__":
         netG1.__class__ == Generator
     ), "Generator object should be Generator class".capitalize()
     assert (
-        netG1.__class__ == Generator
+        netG2.__class__ == Generator
     ), "Generator object should be Generator class".capitalize()
     
     assert (
