@@ -8,6 +8,7 @@ from torchview import draw_graph
 
 sys.path.append("./src/")
 
+from utils import config
 from residualBlock import ResidualBlock
 
 
@@ -93,8 +94,8 @@ if __name__ == "__main__":
 
     image_channels = args.in_channels
 
-    batch_size = 1
-    image_size = 32
+    batch_size = config()["dataloader"]["batch_size"]
+    image_size = config()["dataloader"]["image_size"]
 
     shared_G = ResidualBlock(in_channels=image_channels)
 
