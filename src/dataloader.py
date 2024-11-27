@@ -1,6 +1,7 @@
 import os
 import zipfile
 import sys
+import cv2
 import torch
 import argparse
 from PIL import Image
@@ -54,7 +55,9 @@ class Loader:
             return transforms.Compose(
                 [
                     transforms.ToTensor(),
-                    transforms.Resize((self.image_size, self.image_siz), Image.BICUBIC),
+                    transforms.Resize(
+                        (self.image_size, self.image_size), Image.BICUBIC
+                    ),
                     transforms.CenterCrop((self.image_size, self.image_size)),
                     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
                 ]
@@ -82,10 +85,32 @@ class Loader:
                 image_path = os.path.join(images_path, image)
                 mask_path = os.path.join(masks_path, image)
 
-                self.imageA.append(image_path)
-                self.imageB.append(mask_path)
+                if not os.path.exists(image_path):
+                    print(f"Image not found: {image_path}")
+                    continue
+                if not os.path.exists(mask_path):
+                    print(f"Mask not found: {mask_path}")
+                    continue
+
+                X = cv2.imread(image_path)
+                y = cv2.imread(mask_path)
+
+                X = cv2.cvtColor(X, cv2.COLOR_BGR2RGB)
+                y = cv2.cvtColor(y, cv2.COLOR_BGR2RGB)
+
+                X = self.transforms(type="image")(Image.fromarray(X))
+                y = self.transforms()(Image.fromarray(y))
+
+                self.imageA.append(X)
+                self.imageB.append(y)
 
         assert len(self.imageA) == len(self.imageB)
+
+        try:
+            return self.split_dataset(X=self.imageA, y=self.imageB)
+        except AssertionError as e:
+            print(f"Assertion error: {e}")
+            sys.exit(1)
 
     def create_dataloader(self):
         pass
