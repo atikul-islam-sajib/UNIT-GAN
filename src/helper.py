@@ -2,12 +2,13 @@ import os
 import sys
 import torch
 import argparse
+import traceback
 import torch.nn as nn
 import torch.optim as optim
 
 sys.path.append("./src/")
 
-from utils import config
+from utils import config, load
 from encoder import Encoder
 from gan_loss import GANLoss
 from generator import Generator
@@ -18,6 +19,22 @@ from residualBlock import ResidualBlock
 import warnings
 
 warnings.filterwarnings("ignore")
+
+
+def load_dataloader():
+    processed_path = config()["path"]["processed_path"]
+
+    if os.path.exists(processed_path):
+        train_dataloader = os.path.join(processed_path, "train_dataloader.pkl")
+        valid_dataloader = os.path.join(processed_path, "valid_dataloader.pkl")
+
+        train_dataloader = load(filename=train_dataloader)
+        valid_dataloader = load(filename=valid_dataloader)
+
+        return {
+            "train_dataloader": train_dataloader,
+            "valid_dataloader": valid_dataloader,
+        }
 
 
 def helper(**kwargs):
@@ -31,8 +48,12 @@ def helper(**kwargs):
     shared_E = ResidualBlock(in_channels=256)
     shared_G = ResidualBlock(in_channels=256)
 
-    E1 = Encoder(in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E)
-    E2 = Encoder(in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E)
+    E1 = Encoder(
+        in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E
+    )
+    E2 = Encoder(
+        in_channels=config()["dataloader"]["image_channels"], sharedBlocks=shared_E
+    )
 
     G1 = Generator(in_channels=256, sharedBlocks=shared_G)
     G2 = Generator(in_channels=256, sharedBlocks=shared_G)
@@ -67,7 +88,16 @@ def helper(**kwargs):
     criterion = GANLoss(reduction="mean")
     pixelLoss = PixelLoss(reduction="mean")
 
+    try:
+        dataset = load_dataloader()
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        traceback.print_exc()
+        sys.exit(1)
+
     return {
+        "train_dataloader": dataset["train_dataloader"],
+        "valid_dataloader": dataset["valid_dataloader"],
         "E1": E1,
         "E2": E2,
         "netG1": G1,
@@ -92,12 +122,15 @@ if __name__ == "__main__":
         SGD=False,
     )
 
+    train_dataloader = init["train_dataloader"]
+    valid_dataloader = init["valid_dataloader"]
+
     encoder1 = init["E1"]
     encoder2 = init["E2"]
 
     netG1 = init["netG1"]
     netG2 = init["netG2"]
-    
+
     netD1 = init["netD1"]
     netD2 = init["netD2"]
 
@@ -107,6 +140,13 @@ if __name__ == "__main__":
 
     criterion = init["criterion"]
     pixelLoss = init["pixelLoss"]
+
+    assert (
+        train_dataloader.__class__ == torch.utils.data.DataLoader
+    ), "Train dataloader shoould be torch.utils.data.DataLoader".capitalize()
+    assert (
+        valid_dataloader.__class__ == torch.utils.data.DataLoader
+    ), "Valid dataloader shoould be torch.utils.data.DataLoader".capitalize()
 
     assert (
         encoder1.__class__ == Encoder
@@ -121,7 +161,7 @@ if __name__ == "__main__":
     assert (
         netG2.__class__ == Generator
     ), "Generator object should be Generator class".capitalize()
-    
+
     assert (
         netD1.__class__ == Discriminator
     ), "netD1 object should be Discriminator class".capitalize()
