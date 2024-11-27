@@ -3,6 +3,7 @@ import sys
 import yaml
 import torch
 import joblib
+from tqdm import tqdm
 import torch.nn as nn
 
 sys.path.append("./src/")
@@ -43,3 +44,25 @@ def weight_init(m):
     elif classname.find("BatchNorm") != -1:
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
+
+
+def clean_folders():
+    train_models = config()["path"]["train_models"]
+    best_model = config()["path"]["best_model"]
+    metrics_path = config()["path"]["metrics_path"]
+    train_images = config()["path"]["train_images"]
+    test_image = config()["path"]["test_image"]
+
+    for folder in tqdm(
+        [train_images, test_image, train_models, best_model, metrics_path]
+    ):
+        for file in os.listdir(folder):
+            file_path = os.path.join(folder, file)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"Error occurred while cleaning folder: {folder}")
+                print(f"Error: {e}")
+
+        print("All files have been deleted.".capitalize())
