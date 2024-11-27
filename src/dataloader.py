@@ -1,18 +1,17 @@
 import os
-import zipfile
 import sys
 import cv2
-import torch
+import zipfile
 import argparse
-import traceback
 import warnings
+import traceback
 import pandas as pd
 from PIL import Image
-import torch.nn as nn
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 from torchvision import transforms
+from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
-from torch.utils.data import DataLoader, Dataset
 
 sys.path.append("./src/")
 
@@ -85,7 +84,7 @@ class Loader:
         images_path = os.path.join(dataset_path, "X")
         masks_path = os.path.join(dataset_path, "y")
 
-        for image in os.listdir(images_path):
+        for image in tqdm(os.listdir(images_path)):
             if image.endswith((".jpg", ".jpeg", ".png")) and (
                 image in os.path.join(masks_path, image)
             ):
@@ -233,8 +232,33 @@ class Loader:
 
 
 if __name__ == "__main__":
-    loader = Loader(dataset="./data/raw/dataset.zip")
-    # loader.unzip_folder()
+    parser = argparse.ArgumentParser(description="Dataloader for the UNIT-GAN".title())
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default=config()["dataloader"]["dataset"],
+        help="Define the dataset path".capitalize(),
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=config()["dataloader"]["batch_size"],
+        help="Define the batch size".capitalize(),
+    )
+    parser.add_argument(
+        "--split_size",
+        type=float,
+        default=config()["dataloader"]["split_size"],
+        help="Define the split size".capitalize(),
+    )
+
+    args = parser.parse_args()
+
+    loader = Loader(
+        dataset=args.dataset, batch_size=args.batch_size, split_size=args.split_size
+    )
+
+    loader.unzip_folder()
     loader.create_dataloader()
 
     Loader.dataset_details()

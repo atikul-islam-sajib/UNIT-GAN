@@ -9,6 +9,7 @@ path:
   test_image: "./artifacts/outputs/test_image/"
 
 dataloader:
+  dataset: "./data/raw/dataset.zip"
   image_channels: 3
   batch_size: 1
   image_size: 128
