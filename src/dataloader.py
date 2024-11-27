@@ -8,10 +8,11 @@ from PIL import Image
 import torch.nn as nn
 from torchvision import transforms
 from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader, Dataset
 
 sys.path.append("./src/")
 
-from utils import config
+from utils import config, dump
 
 
 class Loader:
@@ -113,7 +114,31 @@ class Loader:
             sys.exit(1)
 
     def create_dataloader(self):
-        pass
+        try:
+            dataset = self.features_extractor()
+
+            train_dataloader = DataLoader(
+                dataset=list(zip(dataset["X_train"], dataset["Y_train"])),
+                batch_size=self.batch_size,
+                shuffle=True,
+            )
+            valid_dataloader = DataLoader(
+                dataset=list(zip(dataset["X_test"], dataset["y_test"])),
+                batch_size=self.batch_size,
+                shuffle=True,
+            )
+
+            for filename, dataloader in [
+                ("train_dataloader", train_dataloader),
+                ("valid_dataloader", valid_dataloader),
+            ]:
+                dum
+        except AssertionError as e:
+            print(f"Assertion error: {e}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            sys.exit(1)
 
     @staticmethod
     def dataset_details():
