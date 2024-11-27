@@ -72,8 +72,8 @@ class Loader:
     def features_extractor(self):
         dataset_path = os.path.join(config()["path"]["processed_path"], "dataset")
 
-        images_path = os.path.join(dataset_path, "image")
-        masks_path = os.path.join(dataset_path, "mask")
+        images_path = os.path.join(dataset_path, "X")
+        masks_path = os.path.join(dataset_path, "y")
 
         for image in os.listdir(images_path):
             if image.endswith((".jpg", ".jpeg", ".png")) and (
@@ -97,5 +97,5 @@ class Loader:
 
 if __name__ == "__main__":
     loader = Loader(dataset="./data/raw/dataset.zip")
-    # loader.unzip_folder()
+    loader.unzip_folder()
     loader.features_extractor()
