@@ -4,6 +4,8 @@ import sys
 import cv2
 import torch
 import argparse
+import traceback
+import warnings
 from PIL import Image
 import torch.nn as nn
 from torchvision import transforms
@@ -13,6 +15,8 @@ from torch.utils.data import DataLoader, Dataset
 sys.path.append("./src/")
 
 from utils import config, dump
+
+warnings.filterwarnings("ignore")
 
 
 class Loader:
@@ -118,7 +122,7 @@ class Loader:
             dataset = self.features_extractor()
 
             train_dataloader = DataLoader(
-                dataset=list(zip(dataset["X_train"], dataset["Y_train"])),
+                dataset=list(zip(dataset["X_train"], dataset["y_train"])),
                 batch_size=self.batch_size,
                 shuffle=True,
             )
@@ -132,12 +136,26 @@ class Loader:
                 ("train_dataloader", train_dataloader),
                 ("valid_dataloader", valid_dataloader),
             ]:
-                dum
+                dump(
+                    filename=os.path.join(
+                        config()["path"]["processed_path"], filename + ".pkl"
+                    ),
+                    value=dataloader,
+                )
+
+            print(
+                "Train and valid dataloader saved successfully in the folder {}".format(
+                    config()["path"]["processed_path"]
+                ).capitalize()
+            )
+
         except AssertionError as e:
             print(f"Assertion error: {e}")
+            traceback.print_exc()
             sys.exit(1)
         except Exception as e:
             print(f"An error occurred: {e}")
+            traceback.print_exc()
             sys.exit(1)
 
     @staticmethod
@@ -147,5 +165,5 @@ class Loader:
 
 if __name__ == "__main__":
     loader = Loader(dataset="./data/raw/dataset.zip")
-    loader.unzip_folder()
-    loader.features_extractor()
+    # loader.unzip_folder()
+    loader.create_dataloader()
