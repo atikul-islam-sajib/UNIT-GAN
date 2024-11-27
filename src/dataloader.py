@@ -6,15 +6,17 @@ import torch
 import argparse
 import traceback
 import warnings
+import pandas as pd
 from PIL import Image
 import torch.nn as nn
+import matplotlib.pyplot as plt
 from torchvision import transforms
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
 sys.path.append("./src/")
 
-from utils import config, dump
+from utils import config, dump, load
 
 warnings.filterwarnings("ignore")
 
@@ -128,7 +130,7 @@ class Loader:
             )
             valid_dataloader = DataLoader(
                 dataset=list(zip(dataset["X_test"], dataset["y_test"])),
-                batch_size=self.batch_size,
+                batch_size=self.batch_size * 16,
                 shuffle=True,
             )
 
@@ -160,10 +162,41 @@ class Loader:
 
     @staticmethod
     def dataset_details():
-        pass
+        processed_path = os.path.join(config()["path"]["processed_path"])
+        if os.path.exists(processed_path):
+            train_dataloder = os.path.join(processed_path, "train_dataloader.pkl")
+            valid_dataloder = os.path.join(processed_path, "valid_dataloader.pkl")
+
+            train_dataloder = load(filename=train_dataloder)
+            valid_dataloder = load(filename=valid_dataloder)
+
+            train_X, train_Y = next(iter(train_dataloder))
+            valid_X, valid_Y = next(iter(valid_dataloder))
+
+            pd.DataFrame(
+                {
+                    "Train X Shape": str(train_X.size()),
+                    "Train Y Shape": str(train_Y.size()),
+                    "Valid X Shape": str(valid_X.size()),
+                    "Valid Y Shape": str(valid_Y.size()),
+                    "total_train_dataset": sum(X.size(0) for X, _ in train_dataloder),
+                    "total_valid_dataset": sum(X.size(0) for X, _ in valid_dataloder),
+                    "total_dataset": (sum(X.size(0) for X, _ in train_dataloder))
+                    + sum(Y.size(0) for Y, _ in valid_dataloder),
+                },
+                index=["Dataset Details"],
+            ).T.to_csv(
+                os.path.join(config()["path"]["files_path"], "dataset_details.csv")
+            )
+
+        else:
+            print(f"Folder {processed_path} does not exist".capitalize())
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     loader = Loader(dataset="./data/raw/dataset.zip")
     # loader.unzip_folder()
     loader.create_dataloader()
+
+    Loader.dataset_details()

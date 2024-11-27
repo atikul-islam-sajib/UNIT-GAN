@@ -1,0 +1,8 @@
+,Dataset Details
+Train X Shape,"torch.Size([1, 3, 128, 128])"
+Train Y Shape,"torch.Size([1, 3, 128, 128])"
+Valid X Shape,"torch.Size([16, 3, 128, 128])"
+Valid Y Shape,"torch.Size([16, 3, 128, 128])"
+total_train_dataset,80
+total_valid_dataset,20
+total_dataset,100
