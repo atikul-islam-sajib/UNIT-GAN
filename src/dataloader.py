@@ -161,6 +161,44 @@ class Loader:
             sys.exit(1)
 
     @staticmethod
+    def display_images():
+        processed_path = os.path.join(config()["path"]["processed_path"])
+        if os.path.exists(processed_path):
+            train_dataloder = os.path.join(processed_path, "train_dataloader.pkl")
+            valid_dataloder = os.path.join(processed_path, "valid_dataloader.pkl")
+
+            train_dataloder = load(filename=train_dataloder)
+            valid_dataloder = load(filename=valid_dataloder)
+
+            valid_X, valid_Y = next(iter(valid_dataloder))
+
+            num_of_rows = valid_X.size(0) // 2
+            num_of_cols = valid_X.size(0) // num_of_rows
+
+            plt.figure(figsize=(10, 20))
+
+            for index, X in enumerate(valid_X):
+                X = X.squeeze().permute(2, 1, 0).detach().cpu().numpy()
+                y = valid_Y[index].squeeze().permute(2, 1, 0).detach().cpu().numpy()
+
+                X = (X - X.min()) / (X.max() - X.min())
+                y = (y - y.min()) / (y.max() - y.min())
+
+                plt.subplot(2 * num_of_rows, 2 * num_of_cols, 2 * index + 1)
+                plt.imshow(X)
+                plt.title("X")
+                plt.axis("off")
+
+                plt.subplot(2 * num_of_rows, 2 * num_of_cols, 2 * index + 2)
+                plt.imshow(y)
+                plt.title("Y")
+                plt.axis("off")
+
+            plt.tight_layout()
+            plt.savefig(os.path.join(config()["path"]["files_path"], "images.png"))
+            plt.show()
+
+    @staticmethod
     def dataset_details():
         processed_path = os.path.join(config()["path"]["processed_path"])
         if os.path.exists(processed_path):
@@ -200,3 +238,4 @@ if __name__ == "__main__":
     loader.create_dataloader()
 
     Loader.dataset_details()
+    Loader.display_images()
