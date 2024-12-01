@@ -142,6 +142,17 @@ class Trainer:
             raise TypeError(
                 "Model should be passed in the l2 regularizer".capitalize()()
             )
+            
+    def elasticNet_regularizer(self, model):
+        if model is not None:
+            l1 = self.l1_regularization(model=model)
+            l2 = self.l2_regularization(model=model)
+            
+            return 0.01 * (l1 + l2)
+        else:
+            raise TypeError(
+                "Model should be passed in the l2 regularizer".capitalize()()
+            )
 
 
 if __name__ == "__main__":
