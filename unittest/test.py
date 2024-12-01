@@ -12,6 +12,7 @@ from encoder import Encoder
 from gan_loss import GANLoss
 from generator import Generator
 from pixel_loss import PixelLoss
+from kl_divergence import KLDivergence
 from discriminator import Discriminator
 from residualBlock import ResidualBlock
 
@@ -40,6 +41,7 @@ class UnitTest(unittest.TestCase):
 
         self.pixelLoss = PixelLoss(reduction="mean")
         self.criterion = GANLoss(reduction="mean")
+        self.kl_loss = KLDivergence()
 
     def test_residualBlocks(self):
         self.assertEqual(
@@ -219,6 +221,7 @@ class UnitTest(unittest.TestCase):
 
         criterion = init["criterion"]
         pixelLoss = init["pixelLoss"]
+        kl_loss = init["kl_loss"]
 
         assert (
             train_dataloader.__class__ == torch.utils.data.DataLoader
@@ -264,6 +267,9 @@ class UnitTest(unittest.TestCase):
         assert (
             pixelLoss.__class__ == PixelLoss
         ), "pixelLoss object should be PixelLoss class".capitalize()
+        assert (
+            kl_loss.__class__ == KLDivergence
+        ), "KL Divergence object should be PixelLoss class".capitalize()
 
 
 if __name__ == "__main__":
