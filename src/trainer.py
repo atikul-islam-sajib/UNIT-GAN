@@ -153,6 +153,12 @@ class Trainer:
             raise TypeError(
                 "Model should be passed in the l2 regularizer".capitalize()()
             )
+            
+    def display_progress(self, **kwargs):
+        pass
+            
+    def train(self):
+        pass
 
 
 if __name__ == "__main__":
