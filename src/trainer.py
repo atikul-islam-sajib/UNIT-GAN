@@ -127,12 +127,20 @@ class Trainer:
             self.kl_loss.__class__ == KLDivergence
         ), "KL Divergence object should be PixelLoss class".capitalize()
 
-    def l1_regularizer(model):
+    def l1_regularizer(self, model):
         if model is not None:
             return sum(torch.norm(params, 1) for params in model.parameters())
         else:
             raise TypeError(
                 "Model should be passed in the l1 regularizer".capitalize()()
+            )
+            
+    def l2_regularizer(self, model):
+        if model is not None:
+            return sum(torch.norm(params, 2) for params in model.parameters())
+        else:
+            raise TypeError(
+                "Model should be passed in the l2 regularizer".capitalize()()
             )
 
 
