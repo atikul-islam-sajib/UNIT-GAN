@@ -48,6 +48,8 @@ class Trainer:
         self.verbose = verbose
         self.mlFlow = mlFlow
 
+        self.device = device_init(device=self.device)
+
         self.init = helper(
             lr=self.lr,
             beta1=self.beta1,
@@ -60,14 +62,14 @@ class Trainer:
         self.train_dataloader = self.init["train_dataloader"]
         self.valid_dataloader = self.init["valid_dataloader"]
 
-        self.encoder1 = self.init["E1"]
-        self.encoder2 = self.init["E2"]
+        self.encoder1 = self.init["E1"].to(self.device)
+        self.encoder2 = self.init["E2"].to(self.device)
 
-        self.netG1 = self.init["netG1"]
-        self.netG2 = self.init["netG2"]
+        self.netG1 = self.init["netG1"].to(self.device)
+        self.netG2 = self.init["netG2"].to(self.device)
 
-        self.netD1 = self.init["netD1"]
-        self.netD2 = self.init["netD2"]
+        self.netD1 = self.init["netD1"].to(self.device)
+        self.netD2 = self.init["netD2"].to(self.device)
 
         self.optimizerG = self.init["optimizerG"]
         self.optimizerD1 = self.init["optimizerD1"]
@@ -124,7 +126,7 @@ class Trainer:
         assert (
             self.kl_loss.__class__ == KLDivergence
         ), "KL Divergence object should be PixelLoss class".capitalize()
-        
-        
+
+
 if __name__ == "__main__":
     trainer = Trainer()
