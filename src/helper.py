@@ -13,6 +13,7 @@ from encoder import Encoder
 from gan_loss import GANLoss
 from generator import Generator
 from pixel_loss import PixelLoss
+from kl_divergence import KLDivergence
 from discriminator import Discriminator
 from residualBlock import ResidualBlock
 
@@ -87,6 +88,7 @@ def helper(**kwargs):
 
     criterion = GANLoss(reduction="mean")
     pixelLoss = PixelLoss(reduction="mean")
+    kl_loss = KLDivergence()
 
     try:
         dataset = load_dataloader()
@@ -109,6 +111,7 @@ def helper(**kwargs):
         "optimizerD2": optimizerD2,
         "criterion": criterion,
         "pixelLoss": pixelLoss,
+        "kl_loss": kl_loss
     }
 
 
@@ -140,6 +143,7 @@ if __name__ == "__main__":
 
     criterion = init["criterion"]
     pixelLoss = init["pixelLoss"]
+    kl_loss = init["kl_loss"]
 
     assert (
         train_dataloader.__class__ == torch.utils.data.DataLoader
@@ -185,3 +189,6 @@ if __name__ == "__main__":
     assert (
         pixelLoss.__class__ == PixelLoss
     ), "pixelLoss object should be PixelLoss class".capitalize()
+    assert (
+        kl_loss.__class__ == KLDivergence
+    ), "KL Divergence object should be PixelLoss class".capitalize()
