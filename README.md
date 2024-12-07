@@ -1,4 +1,4 @@
-will be completed on 15.12.2024
+will be completed on 31.12.2024
 
 ## TODO
 1. Create the Residual Block: Completed ...
